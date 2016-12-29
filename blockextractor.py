@@ -39,7 +39,7 @@ def help():
     print("------------------------------ Options ------------------------------")
     print("")
     print("--verbose")
-    print("                     Writes filenames and block information to stdout")
+    print("                     Writes filenames and block info to console")
     print("")
     print("--trial")
     print("                     Parses the Block-Chain file but does not write")
