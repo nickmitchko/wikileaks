@@ -68,7 +68,7 @@ def help_():
     print("       python3 direct.py [Direction Change] file [Block Length]")
     print("")
     print("   Direction Change:")
-    print("       --direct:    Outputs 'directed' hex representation of file to console")
+    print("unworking --direct:  Outputs 'directed' hex representation of file to console")
     print("       --un-direct:  Outputs 'un-directed' file (in ascii) to console")
     print("")
     print("   Block Length:")
