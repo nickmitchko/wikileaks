@@ -1,14 +1,17 @@
 ########################
 #   blockextractor.py
 #
-#   A Script to extract individual blocks from the block chain
+#   A Script to extract individual blocks from the block chain boostrap.dat file
 #
-#   Usage: python blockextractor.py /path/to/bootstrap.dat
+#   Usage:
+#       python  blockextractor.py /path/to/bootstrap.dat
+#       python3 blockextractor.py /path/to/bootstrap.dat
 #
-#   Output: a bunch blockchain blocks in the same folder as bootstrap.dat
+#   Output:
+#       Split Blocks in the same directory of the bootstrap.dat file
 #
-#
-#   Information on the blockchain: https://en.bitcoin.it/wiki/Block
+#   Information on block-chain format:
+#       https://en.bitcoin.it/wiki/Block
 ########################
 
 import sys
