@@ -86,7 +86,8 @@ def direct(file_path, block_sz):
     with open(file_path, "rb") as infile:
         try:
             f = infile.readlines()
-
+            while total_bytes < file_size:
+                pass # TODO: Implement the (L->R) :-> (U->D) read change
         except EOFError:
             pass
 
