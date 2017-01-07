@@ -1,14 +1,15 @@
+#!/usr/bin/python3
 ########################
 #   extract7z.py
 #
 #   A Script to extract 7z files from the block-chain
 #
 #   First:
-#       Run the following command to generate the 7z grep stub
-#       $ LANG=C grep -obUaP "\x37\x7A\xBC\xAF\x27\x1C" /path/to/blocks/blk*.dat | tee possible7z.log
-#
-#   Then:
-#       Run this python script on the log file generated "possible7z.log"
+#       Run the following command on the block-chain to generate the 7z grep stub
+#       $ LANG=C grep -obUaP "\x37\x7A\xBC\xAF\x27\x1C" /path/to/blocks/blk*.dat | tee possible-7z.log
+#                                                              ┌-----------------------^^^^^^^^^^^^^^^
+#   Then:                                                      │
+#       Run this python script on the log file generated "possible-7z.log"
 #       Specify an output directory for parsed archives
 #       $ python3 extract7z.py /path/to/possible7z.log ./extractedArchives/
 #
