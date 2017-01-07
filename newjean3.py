@@ -8,7 +8,6 @@ from binascii import unhexlify, crc32
 addr = str(sys.argv[1])
 
 def txdecode(transaction):
-
     data = urllib2.urlopen("https://blockchain.info/rawtx/"+transaction+"?show_adv=true")
     dataout = b''
     atoutput = False
@@ -16,7 +15,6 @@ def txdecode(transaction):
     inoutput = False
     index = -1
     unspents = []
-
     for line in data:
         if 'relayed_by' in line:
             inoutput = True
@@ -30,20 +28,16 @@ def txdecode(transaction):
         
         if inchunk and 'script' in line and inoutput:
             unspents.append(index)
-
     indexat = 0
     data = urllib2.urlopen("https://blockchain.info/tx/"+transaction+"?show_adv=true")
     for line in data:
             if 'Output Scripts' in line:
                 atoutput = True
-
             if '</table>' in line:
                 atoutput = False
-
             if atoutput:
                 if ' <br/>' in line:
                     chunks = line.split(' ')
-
                     for c in chunks:
                         if 'O' not in c and '\n' not in c and '>' not in c and '<' not in c:
                             if indexat in unspents:
@@ -78,43 +72,46 @@ while (keep_reading):
         print 'Page', page, '...'
         data = urllib2.urlopen("https://blockchain.info/address/"+addr+"?offset="+str(offset)+"&filter=0") 
     for line in data:
-        chunks = line.split('><')
-        if 'hash-link' in line:
-            tx_exist = True
-            ll = chunks[4].split(' ')
-            #print 'll', len(ll)
-            if len(ll) == 1:
-                continue
-            #print ll
-            #print 'll2', len(ll[2])
-            lll = ll[2][10:10+64]
+        try:
+            chunks = line.split('><')
+            if 'hash-link' in line:
+                tx_exist = True
+                ll = chunks[4].split(' ')
+                #print 'll', len(ll)
+                if len(ll) == 1:
+                    continue
+                #print ll
+                #print 'll2', len(ll[2])
+                lll = ll[2][10:10+64]
 
-            date1 = ll[4].split('>')[1]
-            date2 = ll[5].split('<')[0]
-            print date1, date2
+                date1 = ll[4].split('>')[1]
+                date2 = ll[5].split('<')[0]
+                print date1, date2
 
-            print lll
-            tx_list.append(lll)
-            f.write(str(lll)+'\n')
-            
-            decoded_data = txdecode(str(lll))
-            if decoded_data != None:
-                fd = open('dataout/'+str(lll),"wb")
-                fd.write(decoded_data)
-                fd.close()
-                status, output = commands.getstatusoutput("dataout/trid dataout/"+str(lll))
-                if 'Unknown!' not in output or 'ASCII' in output:
-                    ff = open('dataout/'+addr+"new_file_tx_list.txt", 'a')
-                    files += 1
-                    outputlines = output.split('\n')
-                    if 'ASCII' in output:
-                        print '** file seems to be plain text/ASCII'
-                        ff.write(str(lll)+' ASCII '+date1+' '+date2+'\n')
-                    else:
-                        for i in range(6,len(outputlines)):
-                            print outputlines[i]
-                        ff.write(str(lll)+' '+outputlines[6]+' '+date1+' '+date2+'\n')
-                    ff.close()
+                print lll
+                tx_list.append(lll)
+                f.write(str(lll)+'\n')
+
+                decoded_data = txdecode(str(lll))
+                if decoded_data != None:
+                    fd = open('dataout/'+str(lll),"wb")
+                    fd.write(decoded_data)
+                    fd.close()
+                    status, output = commands.getstatusoutput("dataout/trid dataout/"+str(lll))
+                    if 'Unknown!' not in output or 'ASCII' in output:
+                        ff = open('dataout/'+addr+"new_file_tx_list.txt", 'a')
+                        files += 1
+                        outputlines = output.split('\n')
+                        if 'ASCII' in output:
+                            print '** file seems to be plain text/ASCII'
+                            ff.write(str(lll)+' ASCII '+date1+' '+date2+'\n')
+                        else:
+                            for i in range(6,len(outputlines)):
+                                print outputlines[i]
+                            ff.write(str(lll)+' '+outputlines[6]+' '+date1+' '+date2+'\n')
+                        ff.close()
+        except Exception:
+            pass
 
     page += 1
     offset += 50

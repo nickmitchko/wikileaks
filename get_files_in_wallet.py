@@ -8,11 +8,9 @@ from binascii import unhexlify, crc32
 addr = str(sys.argv[1])
 
 def txdecode(transaction):
-
     data = urllib2.urlopen("https://blockchain.info/tx/"+transaction+"?show_adv=true") 
     dataout = b''
     atoutput = False
-
     for line in data:
             if 'Output Scripts' in line:
                 atoutput = True
@@ -51,23 +49,26 @@ while (keep_reading):
     for line in data:
         chunks = line.split('><')
         if 'hash-link' in line:
-            tx_exist = True
-            ll = chunks[4].split(' ')
-            lll = ll[2].rstrip('</a>').split('>')[1].rstrip('</a')
-            print lll
-            tx_list.append(str(lll))
-            f.write(str(lll)+'\n')
-            
-            decoded_data = txdecode(str(lll))
-            fd = open(str(lll),"wb")
-            fd.write(decoded_data)
-            fd.close()
+            try:
+                tx_exist = True
+                ll = chunks[4].split(' ')
+                lll = ll[2].rstrip('</a>').split('>')[1].rstrip('</a')
+                print lll
+                tx_list.append(str(lll))
+                f.write(str(lll)+'\n')
 
-            status, output = commands.getstatusoutput("./trid "+str(lll))
-            if 'Unknown!' not in output:
-                ff.write(str(lll)+'\n')
-                files += 1
-                print output
+                decoded_data = txdecode(str(lll))
+                fd = open(str(lll),"wb")
+                fd.write(decoded_data)
+                fd.close()
+
+                status, output = commands.getstatusoutput("./trid "+str(lll))
+                if 'Unknown!' not in output:
+                    ff.write(str(lll)+'\n')
+                    files += 1
+                    print output
+            except Exception:
+                pass
 
     page += 1
     offset += 50
