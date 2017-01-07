@@ -108,7 +108,7 @@ while (keep_reading):
                         else:
                             for i in range(6,len(outputlines)):
                                 print outputlines[i]
-                            ff.write(str(lll)+' '+outputlines[6]+' '+date1+' '+date2+'\n')
+                            ff.write(str(lll)+' '+outputlines[0]+' '+date1+' '+date2+'\n')
                         ff.close()
         except Exception:
             pass
@@ -121,5 +121,5 @@ while (keep_reading):
 print len(tx_list), 'transactions found'
 print files, 'file headers found'
 print 'List saved in file', addr+"_tx_list.txt"
-print 'Txs with file headers saved in', addr+"_file_tx_list.txt"
+print 'Txs with file headers saved in', addr+"new_file_tx_list.txt"
 f.close()

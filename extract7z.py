@@ -24,10 +24,11 @@
 #       will will be corrupted.
 #
 #   TODOs by Priority:
-#       TODO: Implement CRC Checking for header and footer
+#       TODO: Implement CRC-32 Checking for header and footer
 #       TODO: Implement Footer verification
 #       TODO: Implement Multi-transaction extraction
 #       TODO: Add integration with bcrdr2 output database
+#       TODO: Add different file types with header information
 #
 #   Information on 7z format:
 #       http://7-zip.org/recover.html
@@ -71,7 +72,7 @@ def process_grep_output(file_path, out_dir):
                             block.seek(header_offset+6+2+4)
                             end_header_relative_offset = int.from_bytes(block.read(8), byteorder="little")
                             end_header_length = int.from_bytes(block.read(8), byteorder="little")
-                            block.seek(header_offset+6+2+4+8+8+4)
+                            block.seek(header_offset+0x20)
                             first_byte = block.read(1)
                             compression_lzma = True if first_byte == b'\x00' else False
                             block.seek(header_offset)
