@@ -7,8 +7,8 @@
 #   First:
 #       Run the following command on the block-chain to generate the 7z grep stub
 #       $ LANG=C grep -obUaP "\x37\x7A\xBC\xAF\x27\x1C" /path/to/blocks/blk*.dat | tee possible-7z.log
-#                                                              ┌-----------------------^^^^^^^^^^^^^^^
-#   Then:                                                      │
+#                                                            
+#   Then:
 #       Run this python script on the log file generated "possible-7z.log"
 #       Specify an output directory for parsed archives
 #       $ python3 extract7z.py /path/to/possible7z.log ./extractedArchives/
@@ -49,7 +49,6 @@ def read_line_(file):
         if char == b'\xbc':
             while char != b'\x0a' and char != b'':
                 char = file.read(1)
-                print(char)
             print(string)
             return string
         string += str(char)[2:3]
@@ -69,29 +68,40 @@ def process_grep_output(file_path, out_dir):
                         block.seek(header_offset)
                         if block.read(6) == magic_number:
                             version = block.read(2)
-                            block.seek(header_offset+6+2+4)
-                            end_header_relative_offset = int.from_bytes(block.read(8), byteorder="little")
-                            end_header_length = int.from_bytes(block.read(8), byteorder="little")
-                            block.seek(header_offset+0x20)
-                            first_byte = block.read(1)
+                            header_crc = block.read(4)
+                            footer_offset_bytes = block.read(8)
+                            footer_length_bytes = block.read(8)
+                            footer_crc = block.read(4)
+                            footer_relative_offset = int.from_bytes(footer_offset_bytes, byteorder="little")
+                            footer_length = int.from_bytes(footer_length_bytes, byteorder="little")
+                            contents = block.read(footer_relative_offset)
+                            footer = block.read(footer_length)
+                            first_byte = contents[0]
                             compression_lzma = True if first_byte == b'\x00' else False
                             block.seek(header_offset)
-                            file_contents = block.read(32 + end_header_relative_offset + end_header_length)
-                            save_archive(file_contents, file_no, out_dir)
+                            save_archive(version, header_crc, footer_offset_bytes, footer_length_bytes, footer_crc, contents, footer,
+                                         file_no, out_dir)
                             print("Version: " +
-                                  str(int.from_bytes(version, byteorder="little")) +
+                                  str(int.from_bytes(version, byteorder="big")) +
                                   "\tEncoding: " + ("LZMA" if compression_lzma else "LZMA2 or AES") +
-                                  "\tEnd Header: " + str(end_header_relative_offset + end_header_length) )
+                                  "\tEnd Header: " + str(footer_relative_offset + footer_length) )
                             file_no += 1
                     grep_str = read_line_(f)
             except EOFError:
                 pass
 
 
-def save_archive(archive_content, output_number, directory):
+def save_archive(version, header_crc, footer_relative_offset, footer_length, footer_crc, contents, footer, output_number, directory):
     filename = directory + "/archive" + str(output_number) + '.7z'
     with open(filename, 'wb') as file:
-        file.write(archive_content)
+        file.write(magic_number)
+        file.write(version)
+        file.write(header_crc)
+        file.write(footer_relative_offset)
+        file.write(footer_length)
+        file.write(footer_crc)
+        file.write(contents)
+        file.write(footer)
 
 
 # Entry point of the script

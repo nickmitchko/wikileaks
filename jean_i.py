@@ -22,9 +22,9 @@ for line in data:
                 for c in chunks:
                     if 'O' not in c and '\n' not in c and '>' not in c and '<' not in c:
                         dataout += unhexlify(c.encode('utf8'))
-
-#length = struct.unpack('<L', dataout[0:4])[0]
-#checksum = struct.unpack('<L', dataout[4:8])[0]
-#dataout = dataout[8:8+length]
+                        print(c)
+length = struct.unpack('<L', dataout[0:4])[0]
+checksum = struct.unpack('<L', dataout[4:8])[0]
+dataout = dataout[8:8+length]
 
 print dataout
